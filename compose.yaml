@@ -1,0 +1,78 @@
+services:
+  app:
+    image: ${IMAGE_PREFIX:-monitorchange}-app:${IMAGE_TAG:-latest}
+    build: { context: ., target: app }
+    restart: unless-stopped
+    init: true
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3100
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in .env}
+      BOOTSTRAP_TOKEN: ${BOOTSTRAP_TOKEN:?Set BOOTSTRAP_TOKEN in .env}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Set INTERNAL_TOKEN in .env}
+      CAPTURE_URL: http://capture:3101
+      DB_PATH: /app/data/monitorchange.sqlite
+    ports:
+      - "${LAN_BIND_IP:?Set LAN_BIND_IP in .env}:3100:3100"
+    volumes:
+      - monitorchange_data:/app/data
+    networks: [frontend, control]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 100
+    mem_limit: 512m
+    depends_on:
+      capture: { condition: service_started }
+
+  capture:
+    image: ${IMAGE_PREFIX:-monitorchange}-capture:${IMAGE_TAG:-latest}
+    build: { context: ., target: capture }
+    restart: unless-stopped
+    init: true
+    environment:
+      CAPTURE_HOST: 0.0.0.0
+      CAPTURE_PORT: 3101
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN:?Set INTERNAL_TOKEN in .env}
+      EGRESS_PROXY_URL: http://egress:3128
+    networks: [control, exit]
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m
+      - /home/node/.cache:size=128m
+    cap_drop: [ALL]
+    cap_add: [SYS_CHROOT]
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./config/chromium-seccomp.json
+    pids_limit: 180
+    mem_limit: 1g
+    shm_size: 512m
+    depends_on:
+      egress: { condition: service_started }
+
+  egress:
+    image: ${IMAGE_PREFIX:-monitorchange}-egress:${IMAGE_TAG:-latest}
+    build: { context: ., target: egress }
+    restart: unless-stopped
+    init: true
+    environment:
+      EGRESS_HOST: 0.0.0.0
+      EGRESS_PORT: 3128
+    networks: [exit, internet]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 100
+    mem_limit: 256m
+
+networks:
+  frontend: {}
+  control: { internal: true }
+  exit: { internal: true }
+  internet: {}
+
+volumes:
+  monitorchange_data: {}
