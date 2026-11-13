@@ -43,3 +43,17 @@ Este ficheiro regista alterações efetuadas, verificações e limitações. O p
 - Cada imagem recebe `latest` e `sha-<commit>`. O workflow dispara em `main` ou manualmente em `main`, com `packages: write` e o `GITHUB_TOKEN` do próprio repositório.
 - O Compose passou a ter nomes de imagem configuráveis por `IMAGE_PREFIX` e `IMAGE_TAG`, mantendo a opção de build local. O guia explica pull, instalação a partir de imagem e autenticação para pacotes privados.
 - Publicação ainda não executada: os ficheiros do projeto estão por adicionar ao novo repositório e enviar para GitHub. Não foram criados pacotes GHCR nesta etapa.
+
+## 2026-11-13 — guia para instalação no servidor e manutenção do workflow
+
+- O utilizador comunicou a publicação bem-sucedida das três imagens no GHCR pelo workflow do repositório `tugaera/monitorChange`. A instalação num servidor externo ainda não foi executada nem verificada.
+- Criado `docs/INSTALAR_NO_SERVIDOR.md` com pré-requisitos `linux/amd64`, configuração LAN, tokens, autenticação GHCR para pacotes privados, pull, arranque sem build, verificação, diagnóstico e atualização por SHA.
+- Atualizado `.github/workflows/publish.yml`: `actions/checkout@v7`, `docker/setup-buildx-action@v4`, `docker/login-action@v4` e `docker/build-push-action@v7` usam runtime Node 24; o runner ficou fixado em `ubuntu-24.04`.
+- Os avisos de Node 20 referiam-se ao runtime das ações GitHub, não ao Node 22 da aplicação no Dockerfile. O Node da aplicação não foi alterado.
+- README e guia geral apontam para o novo guia. As alterações do workflow ainda não foram publicadas nem executadas no GitHub; o deploy do servidor e a prova de acesso LAN permanecem pendentes.
+
+## 2026-11-13 — instalação sem clone do repositório
+
+- Corrigido `docs/INSTALAR_NO_SERVIDOR.md` para descarregar apenas `compose.yaml`, o perfil seccomp e a sua licença do mesmo commit das imagens; o ficheiro `.env` é criado no servidor. Um repositório privado pode fornecer esses ficheiros por SFTP/SCP.
+- Removida a dependência de Git também do procedimento de atualização. O pull das imagens continua separado dos ficheiros necessários para configurar os serviços no host.
+- Alteração documental; a instalação no servidor permanece por executar e validar.

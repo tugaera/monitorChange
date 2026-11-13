@@ -8,6 +8,7 @@
 - [Plano de implementação e checklist](PLANO_IMPLEMENTACAO.md): contratos técnicos, tarefas, dependências, critérios de conclusão e matriz de aceitação.
 - [Instruções para trabalho neste diretório](AGENTS.md): leitura obrigatória, manutenção da checklist e registo de progresso por quem implementar.
 - [Guia de instalação e operação](docs/INSTALACAO.md): configuração, arranque, acesso LAN e cópias de segurança.
+- [Instalação das imagens publicadas num servidor](docs/INSTALAR_NO_SERVIDOR.md): passos para instalar via GHCR sem clone nem build local.
 - [Workflow de publicação](.github/workflows/publish.yml): três imagens GHCR geradas do mesmo Dockerfile em cada push para `main`.
 - [Histórico de alterações](CHANGELOG.md): trabalho executado, verificações e limitações.
 - Este README descreve o produto, as decisões acordadas e o âmbito da primeira versão.

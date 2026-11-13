@@ -38,7 +38,7 @@ IMAGE_TAG=sha-<commit completo>
 
 Depois executar `docker compose pull` e `docker compose up -d --no-build`. O mesmo Compose mantém as redes, o perfil seccomp e o volume SQLite. Fixar `IMAGE_TAG` a um commit permite repetir uma instalação ou voltar a uma versão anterior; `latest` acompanha o último build em `main`. `docker compose up -d --build` continua disponível para construir localmente e etiqueta as três imagens com o prefixo configurado.
 
-Publicar as imagens não configura nem inicia automaticamente um servidor. A instalação ainda precisa de `.env`, `compose.yaml`, `config/chromium-seccomp.json`, do volume persistente e do arranque Compose no host de destino. O primeiro workflow só poderá correr depois de os ficheiros do projeto serem adicionados e enviados ao repositório GitHub.
+Publicar as imagens não configura nem inicia automaticamente um servidor. A instalação ainda precisa de `.env`, `compose.yaml`, `config/chromium-seccomp.json`, do volume persistente e do arranque Compose no host de destino. Ver o [guia passo a passo para instalar as imagens publicadas](INSTALAR_NO_SERVIDOR.md).
 
 Só a porta 3100 do serviço `app` é publicada, ligada ao IP definido. A rede `frontend` permite publicar essa porta; `control` e `exit` mantêm a comunicação interna, e só `egress` alcança a rede `internet`. Os serviços `capture` e `egress` não publicam portas. O perfil inicial usa **HTTP na LAN**; o tráfego entre o navegador e o servidor não é cifrado. Restringir o acesso à rede de confiança. TLS local requer um proxy e uma configuração adicional ainda não fornecida pelo projeto.
 
