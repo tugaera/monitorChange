@@ -57,3 +57,10 @@ Este ficheiro regista alterações efetuadas, verificações e limitações. O p
 - Corrigido `docs/INSTALAR_NO_SERVIDOR.md` para descarregar apenas `compose.yaml`, o perfil seccomp e a sua licença do mesmo commit das imagens; o ficheiro `.env` é criado no servidor. Um repositório privado pode fornecer esses ficheiros por SFTP/SCP.
 - Removida a dependência de Git também do procedimento de atualização. O pull das imagens continua separado dos ficheiros necessários para configurar os serviços no host.
 - Alteração documental; a instalação no servidor permanece por executar e validar.
+
+## 2026-11-14 — atualização do runtime da aplicação para Node 24
+
+- Alterados os quatro estágios do `Dockerfile` para `node:24-bookworm-slim`, preservando a base Debian Bookworm e os três alvos de publicação.
+- O requisito em `package.json` e `package-lock.json` passou a Node 24+; `@types/node` foi atualizado de 22.20.5 para 24.19.2 no manifesto e lockfile.
+- README e guias de instalação passaram a identificar Node 24 como runtime das novas imagens e do desenvolvimento local. As imagens já publicadas com Node 22 continuam disponíveis até uma nova publicação e atualização da etiqueta no servidor.
+- Compatibilidade analisada com as declarações oficiais de suporte do Node LTS, Playwright e imagem oficial Node. A instalação de `@types/node` concluiu. Build, testes e arranque Docker com Node 24 não foram executados nesta etapa; a execução do workflow após o próximo push deve confirmar o build das três imagens antes de atualizar o servidor.

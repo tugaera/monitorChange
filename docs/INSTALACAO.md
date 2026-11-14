@@ -64,7 +64,7 @@ Para restaurar, parar o serviço app, guardar a base atual em local separado e s
 
 ## Desenvolvimento local
 
-Node 22.17+ e `npm ci` instalam as dependências. `npm run build` compila API, serviços e interface. `npm run dev`, `npm run dev:capture` e `npm run dev:egress` arrancam os serviços em processos distintos; é preciso configurar `CAPTURE_URL`, `EGRESS_PROXY_URL`, `INTERNAL_TOKEN`, `PUBLIC_ORIGIN`, `BOOTSTRAP_TOKEN` e `DB_PATH` de modo coerente. O caminho recomendado para uso permanente é Docker Compose, depois da validação no host alvo.
+Node 24+ e `npm ci` instalam as dependências. `npm run build` compila API, serviços e interface. `npm run dev`, `npm run dev:capture` e `npm run dev:egress` arrancam os serviços em processos distintos; é preciso configurar `CAPTURE_URL`, `EGRESS_PROXY_URL`, `INTERNAL_TOKEN`, `PUBLIC_ORIGIN`, `BOOTSTRAP_TOKEN` e `DB_PATH` de modo coerente. O caminho recomendado para uso permanente é Docker Compose, depois da validação no host alvo.
 
 ## Limites desta etapa
 

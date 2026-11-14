@@ -126,6 +126,8 @@ docker compose ps
 
 Confirmar novamente `/api/health` e a interface. A recuperação de uma versão anterior pode exigir também restaurar a base de dados, caso a atualização tenha alterado o schema; não basta trocar a etiqueta da imagem.
 
+A migração das imagens de Node 22 para Node 24 só chega ao servidor depois de o novo commit gerar as três imagens no GHCR e de este passo de atualização usar a nova etiqueta. Instalar Node no host não altera o runtime dentro dos containers.
+
 ## Estado da validação
 
 As três imagens foram publicadas segundo a execução do GitHub Actions comunicada pelo utilizador. O arranque de Compose e a captura foram verificados anteriormente no Docker Desktop em loopback. A instalação e o acesso LAN neste servidor específico ainda terão de ser confirmados durante os passos acima.

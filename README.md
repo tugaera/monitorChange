@@ -114,7 +114,7 @@ Os estados, condições de confirmação e transições completos estão nas sec
 
 ## Arquitetura inicial
 
-Stack implementada: Node 22, TypeScript, React/Vite, Fastify, SQLite e Playwright/Chromium. As versões das dependências estão fixadas em `package-lock.json`.
+Stack implementada: Node 24, TypeScript, React/Vite, Fastify, SQLite e Playwright/Chromium. As versões das dependências estão fixadas em `package-lock.json`.
 
 - **Aplicação:** interface, API, scheduler, regras, persistência e eventos. Um único serviço controla as escritas SQLite.
 - **Captura:** HTTP ou Chromium, contextos isolados, sem acesso ao volume de dados ou segredos administrativos.

@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS build
+FROM node:24-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -7,7 +7,7 @@ COPY apps ./apps
 COPY packages ./packages
 RUN npm run build
 
-FROM node:22-bookworm-slim AS app
+FROM node:24-bookworm-slim AS app
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
@@ -18,7 +18,7 @@ RUN mkdir -p /app/data && chown -R node:node /app/data
 USER node
 CMD ["node", "dist/apps/api/src/server.js"]
 
-FROM node:22-bookworm-slim AS capture
+FROM node:24-bookworm-slim AS capture
 ENV NODE_ENV=production PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
@@ -28,7 +28,7 @@ RUN ./node_modules/.bin/playwright install --with-deps chromium && chmod -R a+rX
 USER node
 CMD ["node", "dist/apps/capture/src/server.js"]
 
-FROM node:22-bookworm-slim AS egress
+FROM node:24-bookworm-slim AS egress
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
