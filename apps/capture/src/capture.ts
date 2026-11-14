@@ -16,6 +16,14 @@ function classify(status: number, html: string): CaptureStatus {
   if (/challenge-platform|cf-chl-|<title>\s*(just a moment|access denied|verify you are human)/i.test(html)) return 'blocked';
   return 'ok';
 }
+function captureError(status: CaptureStatus, httpStatus: number): string | null {
+  if (status === 'ok') return null;
+  if (status === 'blocked') return httpStatus === 403 || httpStatus === 429
+    ? `A página recusou a leitura (HTTP ${httpStatus}).`
+    : `A página devolveu conteúdo que parece ser uma verificação de acesso (HTTP ${httpStatus}).`;
+  if (status === 'login_required') return `A página exige autenticação (HTTP ${httpStatus}).`;
+  return `A página devolveu um erro HTTP ${httpStatus}.`;
+}
 export function createCaptureEngine(proxyUrl: string) {
   if (!/^http:\/\//.test(proxyUrl)) throw new Error('An HTTP egress proxy is required.');
   const dispatcher = new ProxyAgent(proxyUrl);
@@ -53,7 +61,7 @@ export function createCaptureEngine(proxyUrl: string) {
         const retryValue = response.headers.get('retry-after');
         const retry = retryValue ? (/^\d+$/.test(retryValue) ? Number(retryValue) : Math.max(0,(Date.parse(retryValue)-Date.now())/1000)) : undefined;
         return { status,method:'http',finalUrl:url,httpStatus:response.status,html:status === 'ok' ? html : '',
-          capturedAt:new Date().toISOString(),error:status === 'ok' ? null : `Page returned ${status}.`,
+          capturedAt:new Date().toISOString(),error:captureError(status,response.status),
           ...(retry !== undefined && Number.isFinite(retry) ? {retryAfterSeconds:Math.ceil(retry)} : {}) };
       }
       return failure('limit_exceeded','http',url,'Too many redirects.');
@@ -108,7 +116,7 @@ export function createCaptureEngine(proxyUrl: string) {
       const statusCode = response?.status() || 200;
       const status = classify(statusCode,html);
       const result: CaptureResult = {status,method:'browser',finalUrl:page.url(),httpStatus:statusCode,
-        html:status==='ok'?html:'',capturedAt:new Date().toISOString(),error:status==='ok'?null:`Page returned ${status}.`};
+        html:status==='ok'?html:'',capturedAt:new Date().toISOString(),error:captureError(status,statusCode)};
       if (input.screenshot && status === 'ok') {
         result.captureId = randomUUID();
         result.elements = await page.evaluate(() => {
@@ -151,9 +159,15 @@ export function createCaptureEngine(proxyUrl: string) {
     async capture(input: CaptureRequest): Promise<CaptureResult> {
       if(input.method==='browser' || input.screenshot) return browserCapture(input);
       const result = await httpCapture(input);
-      if(input.method==='auto' && result.status==='ok') {
-        const content = result.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').trim();
-        if(content.length<100) return browserCapture(input);
+      if(input.method==='auto') {
+        if (result.retryAfterSeconds === undefined &&
+          (result.status === 'http_error' || (result.status === 'blocked' && result.httpStatus === 403))) {
+          return browserCapture(input);
+        }
+        if(result.status==='ok') {
+          const content = result.html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').trim();
+          if(content.length<100) return browserCapture(input);
+        }
       }
       return result;
     },

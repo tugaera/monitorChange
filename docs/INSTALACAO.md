@@ -46,6 +46,10 @@ Só a porta 3100 do serviço `app` é publicada, ligada ao IP definido. A rede `
 
 Criar um produto, definir os critérios de compra e adicionar uma ou mais fontes por URL. A fonte começa em pausa: analisar a página, confirmar o vendedor, a variante, a modalidade, o preço e a regra de leitura antes de a ativar. A seleção de elemento é feita por uma lista de candidatos associada a uma captura estática. Uma página bloqueada, ambígua ou sem dados suficientes não deve ser interpretada como produto disponível.
 
+Se a análise indicar acesso bloqueado, consultar o código HTTP apresentado na mensagem. HTTP 403/429 indica recusa ou limitação da leitura; HTTP 200 com uma página de verificação indica que o HTML recebido não é o produto. A análise visual usa Chromium mesmo quando o método da fonte está em Automático ou HTTP. Não ativar uma fonte bloqueada à espera de alertas de stock: confirmar primeiro que a leitura funciona de forma estável a partir do servidor. Alguns websites podem impedir a leitura automatizada; o projeto não contorna CAPTCHA, login ou filas.
+
+Se «Analisar página» funcionar mas «Verificar agora» apresentar erro HTTP, confirmar o método guardado na fonte. A análise visual usa Chromium; no modo Automático, as verificações começam por HTTP e podem receber uma resposta diferente. Alterar essa fonte para «Navegador», guardar e repetir a verificação é uma opção imediata. A próxima versão tentará Chromium automaticamente após certos erros HTTP, exceto quando a loja pedir explicitamente para aguardar. Um erro HTTP não demonstra esgotamento.
+
 O painel guarda eventos locais e continua a monitorizar quando o navegador fecha. A verificação manual respeita a fila e os limites do scheduler. Alterações materiais a URL, região, regra ou critérios reiniciam a referência inicial da fonte.
 
 ## Configuração e dados

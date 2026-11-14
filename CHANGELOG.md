@@ -64,3 +64,17 @@ Este ficheiro regista alterações efetuadas, verificações e limitações. O p
 - O requisito em `package.json` e `package-lock.json` passou a Node 24+; `@types/node` foi atualizado de 22.20.5 para 24.19.2 no manifesto e lockfile.
 - README e guias de instalação passaram a identificar Node 24 como runtime das novas imagens e do desenvolvimento local. As imagens já publicadas com Node 22 continuam disponíveis até uma nova publicação e atualização da etiqueta no servidor.
 - Compatibilidade analisada com as declarações oficiais de suporte do Node LTS, Playwright e imagem oficial Node. A instalação de `@types/node` concluiu. Build, testes e arranque Docker com Node 24 não foram executados nesta etapa; a execução do workflow após o próximo push deve confirmar o build das três imagens antes de atualizar o servidor.
+
+## 2026-11-14 — diagnóstico de páginas bloqueadas
+
+- Um utilizador reportou `Page returned blocked` numa terceira fonte real. A análise do código mostrou que `/api/v1/analyze` pede screenshot e, por isso, usa sempre Chromium; o método HTTP/Automático não altera essa pré-visualização.
+- A captura passa a apresentar o código HTTP e a distinguir recusa 403/429 de HTML que parece ser uma página de verificação com resposta 200. A API deixa de repetir a mesma mensagem como aviso e erro na análise.
+- O guia de operação explica como interpretar o bloqueio e que uma fonte bloqueada não confirma stock. A resposta da API do servidor confirmou `method: browser`, `httpStatus: 403`, `status: blocked` e nenhuma oferta. O HTML da resposta 403 não foi disponibilizado; a causa exata da recusa e a possibilidade de monitorizar essa fonte permanecem por determinar.
+- Mudança de diagnóstico apenas. Build, testes e instalação desta alteração não foram executados nesta etapa; a próxima verificação útil é repetir a análise com o URL canónico sem parâmetros, mantendo a fonte em pausa.
+
+## 2026-11-14 — verificação automática após erro HTTP
+
+- Uma fonte que tinha sido adicionada após análise visual bem-sucedida passou a apresentar `http_error` em «Verificar agora». O código mostrava que a análise sempre usa Chromium, enquanto a verificação em modo Automático começa por HTTP.
+- O motor Automático passa a tentar Chromium quando HTTP devolve `http_error` ou HTTP 403, desde que não haja `Retry-After`. HTTP 429 continua sujeito a espera; o modo HTTP explícito continua sem fallback. O resultado final continua a ser classificado sem presumir stock.
+- O guia de operação descreve a diferença entre análise e verificação e a alternativa imediata de selecionar «Navegador» nessa fonte.
+- O código HTTP concreto da verificação ainda não foi observado. A alteração ainda não foi publicada, construída ou exercitada no servidor; confirmar a resposta após a próxima publicação antes de atribuir o erro a um comportamento específico da loja.

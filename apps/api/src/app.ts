@@ -157,7 +157,7 @@ export async function createApp(options:AppOptions={}):Promise<MonitorApp> {
     const data=body<{url:string;method?:Source['method'];region?:Partial<Region>;rule?:Partial<ReadRule>;criteria?:Partial<Criteria>}>(request);
     const url=validatePublicUrl(data.url);const region=productInput(DEFAULT_REGION,data.region);
     const result=await capture({url,method:data.method??'auto',locale:region.locale,screenshot:true});
-    const extraction=result.status==='ok'?extractOffers(result.html,result.finalUrl||url,productInput(DEFAULT_RULE,data.rule)):{title:'',offers:[],warnings:[result.error??result.status],complete:false};
+    const extraction=result.status==='ok'?extractOffers(result.html,result.finalUrl||url,productInput(DEFAULT_RULE,data.rule)):{title:'',offers:[],warnings:[],complete:false};
     const {html:_html,...safeCapture}=result;
     return{capture:safeCapture,extraction,offers:extraction.offers.map(offer=>evaluateOffer(offer,productInput(DEFAULT_CRITERIA,data.criteria)))};
   });
